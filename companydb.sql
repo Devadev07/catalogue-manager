@@ -1,7 +1,6 @@
 -- STEP 1: Create and use the database
 CREATE DATABASE IF NOT EXISTS companydb;
 USE companydb;
--- DROP DATABASE IF EXISTS companydb;
 
 -- STEP 2: Create 'catalogue' table
 CREATE TABLE IF NOT EXISTS catalogue (
