@@ -1,12 +1,21 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from backend.services.catalogue_service import (
     add_catalogue_service, get_catalogues_service, delete_catalogue_service
 )
 from backend.exception.exceptions import ValidationError
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder='frontend/templates',
+    static_folder='frontend/static'        
+)
+
 CORS(app)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/catalogues', methods=['POST'])
 def add_catalogue():
