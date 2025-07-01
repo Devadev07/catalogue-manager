@@ -9,10 +9,11 @@ class CatalogueRepository:
         cursor = db.cursor()
         try:
             cursor.execute(
-                "INSERT INTO catalogue (catalogue_name, start_date, end_date, is_deleted) VALUES (%s, %s, %s, 0)",
+                "INSERT INTO catalogue (catalogue_name, start_date, end_date) VALUES (%s, %s, %s)",
                 (catalogue.name, catalogue.start_date, catalogue.end_date)
             )
             db.commit()
+            return cursor.lastrowid
         finally:
             cursor.close()
             db.close()
@@ -22,14 +23,17 @@ class CatalogueRepository:
         db = get_db()
         cursor = db.cursor(dictionary=True)
         try:
-            cursor.execute("SELECT * FROM catalogue WHERE is_deleted = 0")
+            cursor.execute("SELECT catalogue_id, catalogue_name, start_date, end_date FROM catalogue WHERE is_deleted=0")
             rows = cursor.fetchall()
-            return [Catalogue(
-                name=row['catalogue_name'],
-                start_date=row['start_date'],
-                end_date=row['end_date'],
-                catalogue_id=row['catalogue_id']
-            ) for row in rows]
+            return [
+                {
+                    "catalogue_id": row["catalogue_id"],
+                    "catalogue_name": row["catalogue_name"],
+                    "start_date": str(row["start_date"]),
+                    "end_date": str(row["end_date"])
+                }
+                for row in rows
+            ]
         finally:
             cursor.close()
             db.close()
@@ -39,8 +43,9 @@ class CatalogueRepository:
         db = get_db()
         cursor = db.cursor()
         try:
-            cursor.execute("UPDATE catalogue SET is_deleted = 1 WHERE catalogue_id = %s", (catalogue_id,))
+            cursor.execute("DELETE FROM catalogue WHERE catalogue_id = %s", (catalogue_id,))
             db.commit()
+            return cursor.rowcount
         finally:
             cursor.close()
             db.close()
