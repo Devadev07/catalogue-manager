@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const list = document.getElementById('catalogueList');
     const alertBox = document.getElementById('alertBox');
 
-    async function showAlert(message, type = 'success') {
+    function showAlert(message, type = 'success') {
         alertBox.textContent = message;
         alertBox.className = `p-2 rounded mb-4 text-white ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
         alertBox.classList.remove('hidden');
@@ -17,8 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadCatalogues() {
         try {
-            const res = await fetch('/getCatalogues');
+            const res = await fetch('/catalogues');
             const data = await res.json();
+            console.log("Fetched catalogues:", data);
+
             list.innerHTML = '';
             data.forEach(item => {
                 const li = document.createElement('li');
@@ -29,21 +31,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         Start: ${item.start_date}<br>
                         End: ${item.end_date}
                     </span>
-                    <button class="bg-red-500 text-white px-2 py-1 rounded" data-id="${item.catalogue_id}">Delete</button>
+                    <button class="bg-red-500 text-white px-2 py-1 rounded delete-btn" data-id="${item.catalogue_id}">Delete</button>
                 `;
                 list.appendChild(li);
             });
 
-            // Attach delete event after rendering
-            document.querySelectorAll('button[data-id]').forEach(button => {
-                button.addEventListener('click', async (e) => {
-                    const id = button.getAttribute('data-id');
-                    await deleteCatalogue(id);
-                });
-            });
+            attachDeleteEvents();
         } catch (err) {
+            console.error(err);
             showAlert('Failed to load catalogues.', 'error');
         }
+    }
+
+    function attachDeleteEvents() {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', async () => {
+                const id = button.getAttribute('data-id');
+                await deleteCatalogue(id);
+            });
+        });
     }
 
     async function deleteCatalogue(id) {
@@ -64,11 +71,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 showAlert(`Error: ${data.message}`, 'error');
             }
         } catch (err) {
+            console.error(err);
             showAlert('Server error while deleting.', 'error');
         }
     }
 
-    saveButton.onclick = async () => {
+    saveButton.addEventListener('click', async () => {
         const name = input.value.trim();
         const start_date = startInput.value;
         const end_date = endInput.value;
@@ -96,9 +104,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 showAlert(`Error: ${data.message}`, 'error');
             }
         } catch (err) {
+            console.error(err);
             showAlert('Server error while saving!', 'error');
         }
-    };
+    });
 
+    // Initial call to load existing catalogues
     loadCatalogues();
 });

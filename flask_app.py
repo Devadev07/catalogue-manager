@@ -1,8 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
-from backend.services.catalogue_service import (
-    add_catalogue_service, get_catalogues_service, delete_catalogue_service
-)
+from backend.services.catalogue_service import (CatalogueService)
 from backend.exception.exceptions import ValidationError
 
 app = Flask(
@@ -21,18 +19,18 @@ def index():
 def add_catalogue():
     data = request.get_json()
     try:
-        return add_catalogue_service(data)
+        return CatalogueService.add_catalogue(data)
     except ValidationError as ve:
         return jsonify({"status": "error", "message": str(ve)}), 400
 
-@app.route('/getCatalogues', methods=['GET'])
+@app.route('/catalogues', methods=['GET'])
 def get_catalogues():
-    return jsonify(get_catalogues_service())
+    return CatalogueService.get_all_catalogues()
 
 @app.route('/deleteCatalogue', methods=['POST'])
 def delete_catalogue():
     data = request.get_json()
-    return delete_catalogue_service(data.get('id'))
+    return CatalogueService.delete_catalogue(data.get('id'))
 
 if __name__ == '__main__':
     app.run(debug=True)
