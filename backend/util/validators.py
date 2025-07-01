@@ -1,6 +1,4 @@
 def validate_catalogue_data(data):
-    required_fields = ['name', 'start_date', 'end_date']
-    for field in required_fields:
-        if field not in data or not data[field]:
-            return False, f"{field} is required"
+    if not data.get('name') or not data.get('start_date') or not data.get('end_date'):
+        return False, "All fields are required"
     return True, ""

@@ -24,8 +24,12 @@ class CatalogueRepository:
         try:
             cursor.execute("SELECT * FROM catalogue WHERE is_deleted = 0")
             rows = cursor.fetchall()
-            return [dict(row) for row in rows]
-  # returning DTO objects
+            return [Catalogue(
+                name=row['catalogue_name'],
+                start_date=row['start_date'],
+                end_date=row['end_date'],
+                catalogue_id=row['catalogue_id']
+            ) for row in rows]
         finally:
             cursor.close()
             db.close()

@@ -1,12 +1,12 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
-from backend.services.catalogue_service import (CatalogueService)
+from backend.services.catalogue_service import CatalogueService
 from backend.exception.exceptions import ValidationError
 
 app = Flask(
     __name__,
     template_folder='frontend/templates',
-    static_folder='frontend/static'        
+    static_folder='frontend/static'
 )
 
 CORS(app)
